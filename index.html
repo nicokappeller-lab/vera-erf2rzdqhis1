@@ -78,7 +78,7 @@ const ls={get(k){try{return JSON.parse(localStorage.getItem("vera:"+k))}catch(e)
 async function getJSON(url){const ctl=new AbortController();const to=setTimeout(()=>ctl.abort(),12000);
  try{const r=await fetch(url,{cache:"no-cache",signal:ctl.signal});if(!r.ok)throw new Error("HTTP "+r.status);return await r.json()}finally{clearTimeout(to)}}
 async function loadMeta(){try{META=await getJSON("data/meta.json?t="+Date.now());metaFail=null;ls.set("meta",META)}
- catch(e){metaFail=e.message||"Netzwerkfehler";META=META||ls.get("meta")}}
+ catch(e){metaFail=/^HTTP/.test(e.message)?e.message:"Netzwerkfehler";META=META||ls.get("meta")}}
 async function load(name){const sha=META&&META.files&&META.files[name]&&META.files[name].sha;
  if(DATA[name]&&DATA[name].sha===sha&&sha)return DATA[name].d;
  try{const d=await getJSON(`data/${name}.json?v=${sha||Date.now()}`);DATA[name]={d,sha};FROM[name]=null;ls.set("d:"+name,{d,at:META&&META.generated});return d}

@@ -1,5 +1,5 @@
-// VERA Service Worker 2026-10-30.2: network-first, bei Netzfehler letzte gecachte Version (App laedt auch offline mit letzten Daten)
-const C = "vera-2026-10-30.2";
+// VERA Service Worker 2026-10-30.3: network-first, bei Netzfehler letzte gecachte Version (App laedt auch offline mit letzten Daten)
+const C = "vera-2026-10-30.3";
 self.addEventListener("install", e => { self.skipWaiting(); e.waitUntil(caches.open(C).then(c => c.addAll(["./", "index.html", "manifest.webmanifest", "icon-180.png"])).catch(() => {})); });
 self.addEventListener("activate", e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener("fetch", e => {
