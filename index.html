@@ -43,17 +43,25 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:5;background:var(--nav);-webk
  display:flex;padding:4px max(4px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(4px,env(safe-area-inset-left));border-top:1px solid var(--ln)}
 nav a{flex:1;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--mu);font-size:10.5px;gap:2px}
 nav a span{font-size:20px;line-height:1}nav a.on{color:var(--gr);font-weight:600}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:none}.dot.g{background:var(--gr);box-shadow:0 0 0 4px rgba(74,222,128,.18)}.dot.r{background:var(--rd);box-shadow:0 0 0 4px rgba(248,113,113,.18)}
+#sys{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--tx);font:inherit;font-size:13px;padding:6px 0;min-height:44px;cursor:pointer}
+.dir{display:inline-block;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;letter-spacing:.3px}.dir.L{background:rgba(74,222,128,.16);color:var(--gr)}.dir.S{background:rgba(248,113,113,.16);color:var(--rd)}
+.hero .big{font-size:34px}.today{font-size:20px;font-weight:700;margin-top:4px}
+.tr{border-top:1px solid var(--ln);padding:12px 0}.tr:first-of-type{border-top:0;padding-top:4px}.tr summary{display:block;list-style:none;min-height:0}.tr summary::-webkit-details-marker{display:none}
+.tr .top{display:flex;justify-content:space-between;align-items:center;gap:8px}.tr .sym{font-size:18px;font-weight:700}.tr .rr{font-size:20px;font-weight:700;text-align:right}
+.lv{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.lv div{background:var(--card2);border-radius:10px;padding:6px 8px}.lv span{display:block;font-size:11px;color:var(--mu)}.lv b{font-size:14px}
+.det{margin-top:8px;font-size:13px;color:var(--mu);line-height:1.6}.hint{font-size:12px;color:var(--mu);margin-top:6px}
 .sk{height:120px;border-radius:16px;background:var(--card);margin:12px 0;opacity:.6}
 </style></head><body>
-<header><h1>VERA AI</h1><span class="pill p-paper">PAPER · keine echten Orders</span></header>
+<header><h1>VERA</h1><span class="pill p-paper">Übungskonto · keine echten Orders</span></header>
 <div id="stand">Lade …</div><div id="banner"></div>
 <main id="m"><div class="sk"></div><div class="sk"></div></main>
 <nav id="nav"></nav>
 <noscript><p style="padding:16px">Bitte JavaScript aktivieren.</p></noscript>
 <script>
 "use strict";
-const TABS=[["dash","📊","Übersicht"],["sig","⚡","Signale"],["jr","📒","Journal"],["ftmo","🛡️","FTMO"],["strat","🏆","Strategien"],["res","🔬","Research"]];
-const NEED={dash:["status"],sig:["signals"],jr:["journal"],ftmo:["ftmo"],strat:["strategies"],res:["research"]};
+const TABS=[["dash","🏠","Start"],["sig","⚡","Trades"],["ftmo","🛡️","Risiko"],["strat","🏆","Strategien"],["jr","📒","Journal"],["res","🔬","Research"]];
+const NEED={dash:["status","signals"],sig:["signals"],jr:["journal"],ftmo:["ftmo"],strat:["strategies"],res:["research"]};
 const $=id=>document.getElementById(id);
 const E=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const num=x=>x===null||x===undefined||x===""||!isFinite(Number(x))?null:Number(x);
@@ -64,7 +72,12 @@ const TF=new Intl.DateTimeFormat("de-DE",{timeZone:"Europe/Berlin",day:"2-digit"
 const tm=s=>{if(!s)return"–";const d=new Date(String(s).replace(" ","T"));return isNaN(d)?E(s):TF.format(d).replace(",","")};
 const ago=s=>{const d=new Date(String(s||"").replace(" ","T"));if(isNaN(d))return null;return(Date.now()-d)/1000};
 const dur=sec=>sec==null?"?":sec<90?Math.round(sec)+" s":sec<5400?Math.round(sec/60)+" Min.":sec<172800?f(sec/3600,1)+" Std.":f(sec/86400,1)+" Tage";
-const nm=id=>String(id||"").replace(/^PAPER_/,"").replace(/^VERA_/,"").replace(/_/g," ").replace(/\|/g," · ");
+const nm=id=>String(id||"").replace(/^PAPER_/,"").replace(/^VERA_/,"").replace(/^GEWINNER_(\d+)_/,"Gewinner $1 · ").replace(/_(Short|Long)(?=_|$)/,"").replace(/_/g," ").replace(/\|/g," · ");
+const only=id=>{const m=String(id||"").match(/_(Short|Long)(?=_|$)/);return m?`<span class="chip">nur ${m[1]}-Setups</span>`:""};
+const DIR=d=>num(d)>0?'<span class="dir L">▲ LONG</span>':num(d)<0?'<span class="dir S">▼ SHORT</span>':"";
+const SYM=s=>String(s||"").replace(".cash","").replace("/","");
+const px=(x,ref)=>{const v=num(x);if(v===null)return"–";const a=Math.abs(num(ref)??v);return f(v,a>=1000?2:a>=50?3:5)};
+const KIND={OPEN:["eröffnet","b"],NACHGEOEFFNET:["nachgeöffnet","b"],CLOSE:["geschlossen","ok"],VERPASST:["verpasst","w"],NICHT_NACHGEOEFFNET:["nicht nachgeöffnet","w"],BLOCKIERT:["blockiert","bad"]};
 const card=(h,b)=>`<section class="card"><h2>${h}</h2>${b}</section>`;
 const empty=t=>`<div class="empty">${t}</div>`;
 const rows=(a,fn)=>a&&a.length?a.map(fn).join(""):empty("Keine Einträge.");
@@ -84,29 +97,39 @@ async function load(name){const sha=META&&META.files&&META.files[name]&&META.fil
  try{const d=await getJSON(`data/${name}.json?v=${sha||Date.now()}`);DATA[name]={d,sha};FROM[name]=null;ls.set("d:"+name,{d,at:META&&META.generated});return d}
  catch(e){const o=ls.get("d:"+name);if(o){FROM[name]=o.at||"?";DATA[name]={d:o.d,sha:null};return o.d}throw e}}
 
+/* ---------- Bausteine ---------- */
+const T=p=>{const r=num(p.r_now),tp=(p.tp||[]);return `<details class="tr"><summary><div class="top"><div><span class="sym">${E(SYM(p.symbol))}</span> ${DIR(p.d)}${p.late?' <span class="chip w">nachgeöffnet</span>':""}</div>
+ <div class="rr ${cl(r)}">${r===null?"–":(r>0?"+":"")+f(r,2)+" R"}<div class="mu" style="font-weight:400">${num(p.unreal_usd)===null?"":(p.unreal_usd>0?"+":"")+usd(p.unreal_usd)}</div></div></div>
+ <div class="lv"><div><span>Einstieg</span><b>${px(p.entry_fill,p.entry_fill)}</b></div><div><span>Stop (SL)</span><b>${px(p.stop,p.entry_fill)}</b></div><div><span>Ziel (TP)</span><b>${tp.length?tp.map(x=>px(x,p.entry_fill)).join(" / "):"–"}</b></div></div></summary>
+ <div class="det">Strategie: ${E(nm(p.strategy))}<br>Aktueller Kurs: ${px(p.now_px,p.entry_fill)}<br>Ausstieg: ${E(p.exit_rule||"laut Strategie")}<br>Risiko: ${usd(p.risk_usd)} (${f(p.risk_pct,2)} %) · ${f(p.lots,2)} Lot<br>Signal: ${tm(p.entry_time)} zu ${px(p.signal_entry,p.entry_fill)}
+ ${p.late?`<br><b class="warn">${E(p.label||"NACHGEÖFFNET")}</b> – Einstieg zum damals aktuellen Kurs, nicht zum Signalkurs.`:""}</div></details>`};
+const EV=a=>{const re=new Set((a||[]).filter(e=>e.kind==="NACHGEOEFFNET").map(e=>e.p&&e.p.key));return(a||[]).filter(e=>KIND[e.kind]&&!(e.kind==="VERPASST"&&e.p&&e.p.key&&re.has(e.p.key)))};
+const sn=p=>nm(p.strategy).replace(SYM(p.symbol),"").replace(/\s+/g," ").trim();
+const S=e=>{const p=e.p||{},k=KIND[e.kind]||[e.kind,""];
+ const r=e.kind==="CLOSE"?`<b class="${cl(p.pnl_usd)}">${(num(p.pnl_usd)>0?"+":"")+usd(p.pnl_usd)}</b><div class="mu">${num(p.r_net)!==null?(p.r_net>0?"+":"")+f(p.r_net,2)+" R":""}</div>`
+  :/OPEN|NACHGEOEFFNET/.test(e.kind)?`<span class="mu">bei</span> ${px(p.entry_fill,p.entry_fill)}`:"";
+ const why=e.kind==="NACHGEOEFFNET"?`${E(p.label||"")} · Signal ${px(p.signal_entry,p.signal_entry)}`:e.kind==="CLOSE"?E(p.exit_reason||""):E(p.reason||"");
+ return row(`<span class="chip ${k[1]}">${k[0]}</span> <span class="mu">${tm(e.ts)}</span><div class="t">${E(SYM(p.symbol))} ${DIR(p.d)} <span class="mu">${E(sn(p))}</span></div>${why?`<div class="mu">${why}</div>`:""}`,r)};
+
 /* ---------- Ansichten ---------- */
 const V={
-dash(){const s=DATA.status.d,a=s.account||{};const pnl=num(a.balance)!==null&&num(a.initial)!==null?a.balance-a.initial:null;
- const age=ago(s.updated),alive=age!==null&&age<600;const st=Object.entries(s.strategies||{});
- const grp=g=>st.filter(([k])=>g==="GEWINNER"?k.startsWith("GEWINNER_"):!k.startsWith("GEWINNER_"));
- const sr=([k,v])=>row(`<div class="t">${E(nm(k))}</div>${v.reason?`<div class="mu">${E(v.reason)}</div>`:""}`,
-   `<span class="chip ${/AKTIV/.test(v.state)?"ok":/FEHLER|GESPERRT/.test(v.state)?"bad":"w"}">${E(v.state||"?")}</span>${num(v.signals_in_window)?`<div class="mu">${v.signals_in_window} Signal(e) im Fenster</div>`:""}`);
- return card("Virtuelles Konto (100k, 2-Step)",`<div class="big">${usd(a.equity)}</div><div class="sub">Equity · Start ${usd(a.initial,0)}</div>
-  <div class="grid"><div><span class="mu">Balance</span><b>${usd(a.balance)}</b></div><div><span class="mu">Ergebnis</span><b class="${cl(pnl)}">${pnl===null?"–":(pnl>0?"+":"")+usd(pnl)}</b></div>
-  <div><span class="mu">Offene Positionen</span><b>${a.open_positions??0}</b></div><div><span class="mu">Abgeschlossene Trades</span><b>${a.closed_trades??0}</b></div></div>`)
- +card("Paper-Dienst",row(alive?'<span class="pos">● läuft</span>':'<span class="neg">● kein aktueller Herzschlag</span>',`<span class="mu">${tm(s.updated)}</span>`)
-  +row("Alter der Daten",dur(age))+row("Journal",`<span class="mu">${E(s.journal||"–")}</span>`)
-  +row("Echte Orders",s.real_orders_enabled?'<b class="neg">AN</b>':'<span class="pos">aus (fest)</span>')
-  +(a.locked?`<div class="bn e">FTMO-Sperre: ${E(a.locked.rule||JSON.stringify(a.locked))}</div>`:""))
- +card(`ORB-Strategien (${grp("ORB").length})`,rows(grp("ORB"),sr))
- +card(`Gewinner – Paper-Beobachtung (${grp("GEWINNER").length})`,rows(grp("GEWINNER"),sr)+'<div class="mu" style="margin-top:8px">Aus In-Sample-Suche (Data-Mining), 0,25 % Risiko je Trade.</div>')
- +card("Datenfeeds",rows(Object.entries(s.data||{}),([k,v])=>row(`<div class="t">${E(k)}</div><div class="mu">${E(v.source||"")}</div>`,`<span class="chip ${v.ok?"ok":"bad"}">${v.ok?"ok":"Pause"}</span>`)+(v.ok?"":`<div class="mu" style="margin:-6px 0 6px">${E(v.reason)}</div>`)))},
+dash(){const s=DATA.status.d,a=s.account||{},g=DATA.signals.d,td=g.today||{};
+ const age=ago(s.updated),alive=age!==null&&age<600,feeds=Object.values(s.data||{}),bad=feeds.filter(v=>!v.ok).length;
+ const ok=alive&&!bad&&!a.locked&&!s.real_orders_enabled,why=!alive?"Paper-Dienst ohne aktuellen Herzschlag ("+dur(age)+")":a.locked?"FTMO-Sperre":bad?bad+" Datenfeed(s) pausiert":s.real_orders_enabled?"Echte Orders AN":"";
+ const htd=num(td.realized)!==null?td.realized+(num(td.unrealized)||0):null,tot=num(a.equity)!==null?a.equity-a.initial:null;
+ const op=g.open||[];const ev=EV(g.events).slice(0,6);
+ return `<button id="sys" data-tog="sysd" aria-expanded="false"><span class="dot ${ok?"g":"r"}"></span>${ok?"System läuft":E(why)}<span class="mu">· ${tm(s.updated)}</span></button>
+ <div id="sysd" hidden>${card("System",row("Paper-Dienst",alive?'<span class="pos">läuft</span>':'<span class="neg">kein Herzschlag</span>')+row("Datenfeeds",`${feeds.length-bad} von ${feeds.length} ok`)
+  +row("Strategien aktiv",`${Object.values(s.strategies||{}).filter(v=>/AKTIV/.test(v.state)).length} von ${Object.keys(s.strategies||{}).length}`)+row("Journal",`<span class="mu">${E(s.journal||"–")}</span>`)
+  +row("Echte Orders",s.real_orders_enabled?'<b class="neg">AN</b>':'<span class="pos">aus (fest)</span>'))}</div>
+ <section class="card hero"><div class="mu">Kontostand (Übungskonto)</div><div class="big">${usd(a.equity)}</div>
+  <div class="today ${cl(htd)}">${htd===null?"–":(htd>0?"+":"")+usd(htd)} <span class="mu" style="font-weight:400">heute</span></div>
+  <div class="hint">Seit Start ${tot===null?"–":`<span class="${cl(tot)}">${tot>0?"+":""}${usd(tot)}</span>`} · Start ${usd(a.initial,0)}${num(td.unrealized)?` · davon offen ${usd(td.unrealized)}`:""}</div></section>
+ ${card(`Offene Trades (${op.length})`,op.length?op.map(T).join("")+'<div class="hint">Antippen für Details.</div>':empty("Gerade kein Trade offen."))}
+ ${card("Letzte Signale",ev.length?ev.map(S).join("")+'<a class="more" href="#sig" style="display:flex;align-items:center;justify-content:center">Alle Trades &amp; Signale</a>':empty("Noch keine Signale."))}`},
 sig(){const d=DATA.signals.d;
- return card("Offene Paper-Positionen",rows(d.open,p=>row(`<div class="t">${E(nm(p.strategy))}</div><div class="mu">${E(p.symbol)} · ${p.d>0?"Long":"Short"} · ${f(p.lots,2)} Lot</div>`,`Einstieg ${f(p.entry_fill,3)}<div class="mu">Stop ${f(p.stop,3)}</div>`)))
- +card("Signale & Trades",d.events&&d.events.length?more("sig",d.events,25,e=>{const p=e.p||{};
-   const r=e.kind==="CLOSE"?`<b class="${cl(p.pnl_usd)}">${usd(p.pnl_usd)}</b><div class="mu">${E(p.exit_reason)}${num(p.r_net)!==null?" · "+f(p.r_net,2)+" R":""}</div>`:e.kind==="OPEN"?`${p.d>0?"Long":"Short"} ${f(p.entry_fill,3)}`:"";
-   return row(`<span class="chip ${e.kind==="CLOSE"?"ok":e.kind==="OPEN"?"b":"w"}">${E(e.kind)}</span> <span class="mu">${tm(e.ts)}</span><div class="t">${E(nm(p.strategy))}</div>${p.reason?`<div class="mu">${E(p.reason)}</div>`:""}`,r)})
-  :empty("Noch keine Signale seit Dienststart."))},
+ return card(`Offene Trades (${(d.open||[]).length})`,(d.open||[]).length?d.open.map(T).join(""):empty("Gerade kein Trade offen."))
+ +card("Alle Signale & Trades",d.events&&d.events.length?more("sig",EV(d.events),25,S):empty("Noch keine Signale seit Dienststart."))},
 jr(){const ev=DATA.journal.d.events||[];
  return card(`Unveränderliches Journal (Hashkette) · ${ev.length} neueste`,more("jr",ev,40,e=>row(`<span class="chip ${/FEHLER|VERSTOSS|PAUSE/.test(e.kind)?"bad":/CLOSE|OK|START/.test(e.kind)?"ok":""}">${E(e.kind)}</span> <span class="mu">#${e.seq} · ${tm(e.ts)}</span><div class="mu" style="margin-top:3px">${E(e.info)}</div>`,"")))},
 ftmo(){const d=DATA.ftmo.d,a=d.account||{},ini=num(a.initial)||100000,rk=d.risk||{};
@@ -120,7 +143,7 @@ ftmo(){const d=DATA.ftmo.d,a=d.account||{},ini=num(a.initial)||100000,rk=d.risk|
  +card("Tages-P&L (Paper, UTC-Tag)",dp.length?rows(dp,([k,v])=>row(new Date(k+"T12:00:00Z").toLocaleDateString("de-DE",{weekday:"short",day:"2-digit",month:"2-digit",year:"numeric"}),`<b class="${cl(v)}">${usd(v)}</b>`)):empty("Noch keine abgeschlossenen Paper-Trades."))
  +card("Regelwerke (Quelle)",rows(d.rulesets,r=>row(`<a href="${E(r.url)}" target="_blank" rel="noopener">${E(r.id)}</a>`,`<span class="mu">${E(r.retrieved)}</span>`)))},
 strat(){const d=DATA.strategies.d,P=d.paper||[];const g=x=>P.filter(p=>(p.gruppe||"ORB")===x);
- const pr=p=>row(`<div class="t">${E(nm(p.id))}</div><div class="mu">${E(p.herkunft||"")}</div><div class="mu">${E(p.basis||"")}</div>`,`${E(p.symbol)}<div class="mu">${f(p.risk_pct,2)} %</div><span class="chip ${p.gruppe==="GEWINNER"?"w":"ok"}">${E(p.status||"Paper")}</span>`);
+ const pr=p=>row(`<div class="t">${E(nm(p.id))} ${only(p.id)}</div><div class="mu">${E(p.herkunft||"")}</div><div class="mu">${E(p.basis||"")}</div>`,`${E(p.symbol)}<div class="mu">${f(p.risk_pct,2)} %</div><span class="chip ${p.gruppe==="GEWINNER"?"w":"ok"}">${E(p.status||"Paper")}</span>`);
  const R=r=>[E(nm(r.strategy)),E(r.symbol)+(r.tf?" "+E(r.tf):""),f(r.n,0),`<span class="${cl(r.avg_r)}">${f(r.avg_r,3)}</span>`,f(r.pf,2),f(r.t,2)];
  return card(`Im Paper-Trading: ORB (${g("ORB").length})`,rows(g("ORB"),pr))
  +card(`Im Paper-Trading: Gewinner (${g("GEWINNER").length})`,rows(g("GEWINNER"),pr)+'<div class="bn w" style="margin-top:8px">Data-Mining-Treffer: kleine Holdout-Stichproben, Rückblick-Werte sind kein Gewinnversprechen.</div>')
@@ -149,9 +172,11 @@ async function show(force){const k=(location.hash||"#dash").slice(1);const key=V
   if(force||!META)await loadMeta();
   let html;try{await Promise.all(NEED[key].map(load));html=V[key]()}
   catch(e){html=card("Daten nicht verfügbar",`<div class="neg">${E(e.message||e)}</div><div class="mu">Es liegen auch keine zwischengespeicherten Daten vor.</div><button class="more" data-reload="1">Erneut versuchen</button>`)}
-  banners();if(html!==lastHTML){$("m").innerHTML=html;lastHTML=html}
+  banners();if(html!==lastHTML){const op=[...document.querySelectorAll("#m details")].map(d=>d.open),sh=$("sysd")&&!$("sysd").hidden;$("m").innerHTML=html;lastHTML=html;
+   document.querySelectorAll("#m details").forEach((d,i)=>{if(op[i])d.open=true});if(sh&&$("sysd")){$("sysd").hidden=false;$("sys").setAttribute("aria-expanded","true")}}
  }finally{busy=false}}
-document.addEventListener("click",e=>{const m=e.target.closest("[data-more]");if(m){LIM[m.dataset.more]=(LIM[m.dataset.more]||+m.dataset.step)+ +m.dataset.step;lastHTML="";const y=scrollY;show().then(()=>scrollTo(0,y));return}
+document.addEventListener("click",e=>{const tg=e.target.closest("[data-tog]");if(tg){const x=$(tg.dataset.tog);x.hidden=!x.hidden;tg.setAttribute("aria-expanded",String(!x.hidden));return}
+ const m=e.target.closest("[data-more]");if(m){LIM[m.dataset.more]=(LIM[m.dataset.more]||+m.dataset.step)+ +m.dataset.step;lastHTML="";const y=scrollY;show().then(()=>scrollTo(0,y));return}
  if(e.target.closest("[data-reload]"))show(true)},{passive:true});
 addEventListener("hashchange",()=>show(false),{passive:true});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)show(true)},{passive:true});

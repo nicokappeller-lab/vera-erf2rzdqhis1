@@ -1,0 +1,162 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="VERA">
+<meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)"><meta name="theme-color" content="#f4f6f9" media="(prefers-color-scheme: light)">
+<meta name="color-scheme" content="dark light"><meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>VERA AI – Paper</title>
+<style>
+:root{--bg:#0b0f14;--card:#141b24;--card2:#1a2330;--tx:#e8eef4;--mu:#8b98a5;--ln:#222c38;--gr:#4ade80;--rd:#f87171;--yl:#fbbf24;--bl:#60a5fa;--nav:rgba(13,18,25,.92)}
+@media (prefers-color-scheme:light){:root{--bg:#f4f6f9;--card:#fff;--card2:#eef2f6;--tx:#111827;--mu:#5b6675;--ln:#e3e8ee;--gr:#16a34a;--rd:#dc2626;--yl:#b45309;--bl:#2563eb;--nav:rgba(255,255,255,.94)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
+ padding:0 env(safe-area-inset-right) calc(76px + env(safe-area-inset-bottom)) env(safe-area-inset-left);font-variant-numeric:tabular-nums}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(10px + env(safe-area-inset-top)) 16px 8px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+h1{font-size:22px;margin:0;letter-spacing:-.3px}
+.pill{border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.p-paper{background:rgba(251,191,36,.15);color:var(--yl)}.p-ok{background:rgba(74,222,128,.15);color:var(--gr)}.p-bad{background:rgba(248,113,113,.15);color:var(--rd)}
+#stand{padding:0 16px 4px;font-size:12px;color:var(--mu)}
+#banner:empty{display:none}#banner{margin:6px 12px 0}
+.bn{border-radius:12px;padding:10px 12px;font-size:14px;margin-bottom:6px}.bn.w{background:rgba(251,191,36,.14);color:var(--yl)}.bn.e{background:rgba(248,113,113,.14);color:var(--rd)}
+main{padding:0 12px;max-width:760px;margin:0 auto;contain:content}
+.card{background:var(--card);border-radius:16px;padding:14px 16px;margin:12px 0;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.card h2{font-size:13px;margin:0 0 10px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.big{font-size:30px;font-weight:700;letter-spacing:-.5px}.sub{font-size:14px;color:var(--mu)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.grid b{display:block;font-size:17px}
+.mu{color:var(--mu);font-size:13px}.pos{color:var(--gr)}.neg{color:var(--rd)}.warn{color:var(--yl)}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--ln);min-height:44px}
+.row:first-of-type{border-top:0}.row .l{min-width:0;flex:1;overflow-wrap:anywhere}.row .r{text-align:right;white-space:nowrap;font-size:14px}
+.t{font-size:15px;font-weight:500}.chip{display:inline-block;border-radius:6px;padding:1px 7px;font-size:12px;font-weight:600;background:var(--card2);color:var(--mu)}
+.chip.ok{color:var(--gr)}.chip.bad{color:var(--rd)}.chip.w{color:var(--yl)}.chip.b{color:var(--bl)}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -16px;padding:0 16px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:8px 6px;border-top:1px solid var(--ln);text-align:left;white-space:nowrap}th{color:var(--mu);font-weight:500;border-top:0}
+td.n,th.n{text-align:right}
+.bar{height:8px;background:var(--card2);border-radius:4px;overflow:hidden;margin:6px 0 12px}.bar i{display:block;height:100%}
+.empty{color:var(--mu);font-style:italic;padding:6px 0}
+a{color:var(--bl);text-decoration:none}
+button.more{display:block;width:100%;min-height:44px;margin-top:8px;border:0;border-radius:12px;background:var(--card2);color:var(--tx);font:inherit;font-size:15px}
+details summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:500}pre{white-space:pre-wrap;font-size:12px;line-height:1.45;margin:0}
+.h3{font-size:14px;font-weight:600;margin:14px 0 2px}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:5;background:var(--nav);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+ display:flex;padding:4px max(4px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(4px,env(safe-area-inset-left));border-top:1px solid var(--ln)}
+nav a{flex:1;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--mu);font-size:10.5px;gap:2px}
+nav a span{font-size:20px;line-height:1}nav a.on{color:var(--gr);font-weight:600}
+.sk{height:120px;border-radius:16px;background:var(--card);margin:12px 0;opacity:.6}
+</style></head><body>
+<header><h1>VERA AI</h1><span class="pill p-paper">PAPER · keine echten Orders</span></header>
+<div id="stand">Lade …</div><div id="banner"></div>
+<main id="m"><div class="sk"></div><div class="sk"></div></main>
+<nav id="nav"></nav>
+<noscript><p style="padding:16px">Bitte JavaScript aktivieren.</p></noscript>
+<script>
+"use strict";
+const TABS=[["dash","📊","Übersicht"],["sig","⚡","Signale"],["jr","📒","Journal"],["ftmo","🛡️","FTMO"],["strat","🏆","Strategien"],["res","🔬","Research"]];
+const NEED={dash:["status"],sig:["signals"],jr:["journal"],ftmo:["ftmo"],strat:["strategies"],res:["research"]};
+const $=id=>document.getElementById(id);
+const E=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const num=x=>x===null||x===undefined||x===""||!isFinite(Number(x))?null:Number(x);
+const f=(x,d=2)=>{const v=num(x);return v===null?"–":v.toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d})};
+const usd=(x,d=2)=>num(x)===null?"–":f(x,d)+" $";
+const cl=x=>num(x)>0?"pos":num(x)<0?"neg":"";
+const TF=new Intl.DateTimeFormat("de-DE",{timeZone:"Europe/Berlin",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",timeZoneName:"short"});
+const tm=s=>{if(!s)return"–";const d=new Date(String(s).replace(" ","T"));return isNaN(d)?E(s):TF.format(d).replace(",","")};
+const ago=s=>{const d=new Date(String(s||"").replace(" ","T"));if(isNaN(d))return null;return(Date.now()-d)/1000};
+const dur=sec=>sec==null?"?":sec<90?Math.round(sec)+" s":sec<5400?Math.round(sec/60)+" Min.":sec<172800?f(sec/3600,1)+" Std.":f(sec/86400,1)+" Tage";
+const nm=id=>String(id||"").replace(/^PAPER_/,"").replace(/^VERA_/,"").replace(/_/g," ").replace(/\|/g," · ");
+const card=(h,b)=>`<section class="card"><h2>${h}</h2>${b}</section>`;
+const empty=t=>`<div class="empty">${t}</div>`;
+const rows=(a,fn)=>a&&a.length?a.map(fn).join(""):empty("Keine Einträge.");
+const row=(l,r)=>`<div class="row"><div class="l">${l}</div><div class="r">${r}</div></div>`;
+const tbl=(hd,rs,numc=[])=>rs&&rs.length?`<div class="tw"><table><thead><tr>${hd.map((h,i)=>`<th${numc.includes(i)?' class="n"':""}>${h}</th>`).join("")}</tr></thead><tbody>${rs.map(r=>`<tr>${r.map((x,i)=>`<td${numc.includes(i)?' class="n"':""}>${x}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`:empty("Keine Einträge.");
+const LIM={};const more=(key,arr,n,fn)=>{const k=LIM[key]||n;return rows(arr.slice(0,k),fn)+(arr.length>k?`<button class="more" data-more="${key}" data-step="${n}">Weitere ${Math.min(n,arr.length-k)} von ${arr.length-k} anzeigen</button>`:"")};
+
+/* ---------- Daten: kleine Dateien, nur bei Bedarf, Fallback auf letzte gespeicherte Daten ---------- */
+let META=null,metaFail=null;const DATA={},FROM={};
+const ls={get(k){try{return JSON.parse(localStorage.getItem("vera:"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("vera:"+k,JSON.stringify(v))}catch(e){}}};
+async function getJSON(url){const ctl=new AbortController();const to=setTimeout(()=>ctl.abort(),12000);
+ try{const r=await fetch(url,{cache:"no-cache",signal:ctl.signal});if(!r.ok)throw new Error("HTTP "+r.status);return await r.json()}finally{clearTimeout(to)}}
+async function loadMeta(){try{META=await getJSON("data/meta.json?t="+Date.now());metaFail=null;ls.set("meta",META)}
+ catch(e){metaFail=/^HTTP/.test(e.message)?e.message:"Netzwerkfehler";META=META||ls.get("meta")}}
+async function load(name){const sha=META&&META.files&&META.files[name]&&META.files[name].sha;
+ if(DATA[name]&&DATA[name].sha===sha&&sha)return DATA[name].d;
+ try{const d=await getJSON(`data/${name}.json?v=${sha||Date.now()}`);DATA[name]={d,sha};FROM[name]=null;ls.set("d:"+name,{d,at:META&&META.generated});return d}
+ catch(e){const o=ls.get("d:"+name);if(o){FROM[name]=o.at||"?";DATA[name]={d:o.d,sha:null};return o.d}throw e}}
+
+/* ---------- Ansichten ---------- */
+const V={
+dash(){const s=DATA.status.d,a=s.account||{};const pnl=num(a.balance)!==null&&num(a.initial)!==null?a.balance-a.initial:null;
+ const age=ago(s.updated),alive=age!==null&&age<600;const st=Object.entries(s.strategies||{});
+ const grp=g=>st.filter(([k])=>g==="GEWINNER"?k.startsWith("GEWINNER_"):!k.startsWith("GEWINNER_"));
+ const sr=([k,v])=>row(`<div class="t">${E(nm(k))}</div>${v.reason?`<div class="mu">${E(v.reason)}</div>`:""}`,
+   `<span class="chip ${/AKTIV/.test(v.state)?"ok":/FEHLER|GESPERRT/.test(v.state)?"bad":"w"}">${E(v.state||"?")}</span>${num(v.signals_in_window)?`<div class="mu">${v.signals_in_window} Signal(e) im Fenster</div>`:""}`);
+ return card("Virtuelles Konto (100k, 2-Step)",`<div class="big">${usd(a.equity)}</div><div class="sub">Equity · Start ${usd(a.initial,0)}</div>
+  <div class="grid"><div><span class="mu">Balance</span><b>${usd(a.balance)}</b></div><div><span class="mu">Ergebnis</span><b class="${cl(pnl)}">${pnl===null?"–":(pnl>0?"+":"")+usd(pnl)}</b></div>
+  <div><span class="mu">Offene Positionen</span><b>${a.open_positions??0}</b></div><div><span class="mu">Abgeschlossene Trades</span><b>${a.closed_trades??0}</b></div></div>`)
+ +card("Paper-Dienst",row(alive?'<span class="pos">● läuft</span>':'<span class="neg">● kein aktueller Herzschlag</span>',`<span class="mu">${tm(s.updated)}</span>`)
+  +row("Alter der Daten",dur(age))+row("Journal",`<span class="mu">${E(s.journal||"–")}</span>`)
+  +row("Echte Orders",s.real_orders_enabled?'<b class="neg">AN</b>':'<span class="pos">aus (fest)</span>')
+  +(a.locked?`<div class="bn e">FTMO-Sperre: ${E(a.locked.rule||JSON.stringify(a.locked))}</div>`:""))
+ +card(`ORB-Strategien (${grp("ORB").length})`,rows(grp("ORB"),sr))
+ +card(`Gewinner – Paper-Beobachtung (${grp("GEWINNER").length})`,rows(grp("GEWINNER"),sr)+'<div class="mu" style="margin-top:8px">Aus In-Sample-Suche (Data-Mining), 0,25 % Risiko je Trade.</div>')
+ +card("Datenfeeds",rows(Object.entries(s.data||{}),([k,v])=>row(`<div class="t">${E(k)}</div><div class="mu">${E(v.source||"")}</div>`,`<span class="chip ${v.ok?"ok":"bad"}">${v.ok?"ok":"Pause"}</span>`)+(v.ok?"":`<div class="mu" style="margin:-6px 0 6px">${E(v.reason)}</div>`)))},
+sig(){const d=DATA.signals.d;
+ return card("Offene Paper-Positionen",rows(d.open,p=>row(`<div class="t">${E(nm(p.strategy))}</div><div class="mu">${E(p.symbol)} · ${p.d>0?"Long":"Short"} · ${f(p.lots,2)} Lot</div>`,`Einstieg ${f(p.entry_fill,3)}<div class="mu">Stop ${f(p.stop,3)}</div>`)))
+ +card("Signale & Trades",d.events&&d.events.length?more("sig",d.events,25,e=>{const p=e.p||{};
+   const r=e.kind==="CLOSE"?`<b class="${cl(p.pnl_usd)}">${usd(p.pnl_usd)}</b><div class="mu">${E(p.exit_reason)}${num(p.r_net)!==null?" · "+f(p.r_net,2)+" R":""}</div>`:e.kind==="OPEN"?`${p.d>0?"Long":"Short"} ${f(p.entry_fill,3)}`:"";
+   return row(`<span class="chip ${e.kind==="CLOSE"?"ok":e.kind==="OPEN"?"b":"w"}">${E(e.kind)}</span> <span class="mu">${tm(e.ts)}</span><div class="t">${E(nm(p.strategy))}</div>${p.reason?`<div class="mu">${E(p.reason)}</div>`:""}`,r)})
+  :empty("Noch keine Signale seit Dienststart."))},
+jr(){const ev=DATA.journal.d.events||[];
+ return card(`Unveränderliches Journal (Hashkette) · ${ev.length} neueste`,more("jr",ev,40,e=>row(`<span class="chip ${/FEHLER|VERSTOSS|PAUSE/.test(e.kind)?"bad":/CLOSE|OK|START/.test(e.kind)?"ok":""}">${E(e.kind)}</span> <span class="mu">#${e.seq} · ${tm(e.ts)}</span><div class="mu" style="margin-top:3px">${E(e.info)}</div>`,"")))},
+ftmo(){const d=DATA.ftmo.d,a=d.account||{},ini=num(a.initial)||100000,rk=d.risk||{};
+ const dl=a.equity-a.daily_floor,ml=a.equity-a.max_floor;
+ const b=(v,m)=>{const p=Math.max(0,Math.min(100,v/m*100));return`<div class="bar"><i style="width:${isFinite(p)?p:0}%;background:${p<30?"var(--rd)":p<60?"var(--yl)":"var(--gr)"}"></i></div>`};
+ const dp=Object.entries(d.daily_pnl||{}).sort().reverse();
+ return card(`Risikomanager (virtuell · ${E(d.profile||"–")})`,`<div class="mu">Abstand zur Tagesverlust-Grenze (${usd(a.daily_floor,0)})</div><div class="big ${dl<.015*ini?"warn":""}">${usd(dl)}</div>${b(dl,.05*ini)}
+  <div class="mu">Abstand zur Maximalverlust-Grenze (${usd(a.max_floor,0)})</div><div class="big">${usd(ml)}</div>${b(ml,.10*ini)}
+  ${row("Risiko je Trade",`${f(rk.default_pct,2)} % / konservativ ${f(rk.conservative_pct,2)} %`)}${row("Offenes Risiko max.",f(rk.max_open_risk_pct,1)+" %")}
+  ${a.locked?`<div class="bn e">GESPERRT: ${E(a.locked.rule||JSON.stringify(a.locked))}</div>`:'<div class="pos" style="margin-top:8px">✓ Keine Regelverletzung</div>'}`)
+ +card("Tages-P&L (Paper, UTC-Tag)",dp.length?rows(dp,([k,v])=>row(new Date(k+"T12:00:00Z").toLocaleDateString("de-DE",{weekday:"short",day:"2-digit",month:"2-digit",year:"numeric"}),`<b class="${cl(v)}">${usd(v)}</b>`)):empty("Noch keine abgeschlossenen Paper-Trades."))
+ +card("Regelwerke (Quelle)",rows(d.rulesets,r=>row(`<a href="${E(r.url)}" target="_blank" rel="noopener">${E(r.id)}</a>`,`<span class="mu">${E(r.retrieved)}</span>`)))},
+strat(){const d=DATA.strategies.d,P=d.paper||[];const g=x=>P.filter(p=>(p.gruppe||"ORB")===x);
+ const pr=p=>row(`<div class="t">${E(nm(p.id))}</div><div class="mu">${E(p.herkunft||"")}</div><div class="mu">${E(p.basis||"")}</div>`,`${E(p.symbol)}<div class="mu">${f(p.risk_pct,2)} %</div><span class="chip ${p.gruppe==="GEWINNER"?"w":"ok"}">${E(p.status||"Paper")}</span>`);
+ const R=r=>[E(nm(r.strategy)),E(r.symbol)+(r.tf?" "+E(r.tf):""),f(r.n,0),`<span class="${cl(r.avg_r)}">${f(r.avg_r,3)}</span>`,f(r.pf,2),f(r.t,2)];
+ return card(`Im Paper-Trading: ORB (${g("ORB").length})`,rows(g("ORB"),pr))
+ +card(`Im Paper-Trading: Gewinner (${g("GEWINNER").length})`,rows(g("GEWINNER"),pr)+'<div class="bn w" style="margin-top:8px">Data-Mining-Treffer: kleine Holdout-Stichproben, Rückblick-Werte sind kein Gewinnversprechen.</div>')
+ +card("Robuste ORB-Konfigurationen (Phase 1, OOS)",tbl(["Strategie","Symbol","n","ØR","PF","t"],(d.robust_orb||[]).map(R),[2,3,4,5]))
+ +card("Rangliste ORB OOS netto (n≥30)"+(d.orb_run?` · ${E(d.orb_run)}`:""),tbl(["Strategie","Symbol","n","ØR","PF","t"],(d.orb||[]).map(R),[2,3,4,5]))
+ +card("Rangliste VERA-Familien OOS netto (n≥30)"+(d.vera_run?` · ${E(d.vera_run)}`:""),tbl(["Familie · Einstieg","Symbol","n","ØR","PF","t"],(d.vera||[]).map(R),[2,3,4,5])+'<div class="mu" style="margin-top:8px">Viele Kombinationen getestet → Spitzenwerte teils Zufall. Keine Familie besteht Walk-Forward.</div>')},
+res(){const d=DATA.research.d;
+ const lk=(u,t)=>u?`<a href="${E(u)}" target="_blank" rel="noopener">${E(t||u)}</a>`:E(t||"–");
+ return card(`Hypothesen (${(d.hypotheses||[]).length})`,(d.hypotheses||[]).length?more("hy",d.hypotheses,15,h=>row(`<div class="t">${lk(h.url,h.title)}</div><div class="mu">${E(h.source)} · ${E(h.family)}</div>`,`<span class="chip">${E(h.status)}</span>`)):empty("Noch keine Hypothesen."))
+ +card(`Funde (${(d.candidates||[]).length})`,more("ca",d.candidates||[],15,c=>row(`<div class="t">${lk(c.url,(c.title||"").slice(0,90))}</div><div class="mu">${E(c.found||"")}</div>`,`<span class="chip">${E(c.stage)}</span>`)))
+ +card("Offene Fragen an Nico",d.fragen_md?`<details><summary>Fragenliste anzeigen</summary><pre>${E(d.fragen_md)}</pre></details>`:empty("Noch keine Fragenliste."))}};
+
+/* ---------- Rendern: nur wenn sich etwas geändert hat ---------- */
+let cur=null,lastHTML="",busy=false;
+function nav(k){$("nav").innerHTML=TABS.map(([t,i,l])=>`<a href="#${t}" class="${t===k?"on":""}"${t===k?' aria-current="page"':""}><span aria-hidden="true">${i}</span>${l}</a>`).join("")}
+function banners(){const b=[];
+ if(metaFail)b.push(`<div class="bn e">Keine Verbindung zu GitHub Pages (${E(metaFail)}). Angezeigt werden die letzten Daten von ${META?E(META.stand)+" MEZ":"–"}.</div>`);
+ if(META){const ea=ago(META.generated);if(ea>900)b.push(`<div class="bn w">Letzter Export vor ${dur(ea)} (${E(META.stand)} MEZ) – der Export auf der Box lief seitdem nicht. Werte können veraltet sein.</div>`);
+  const er=Object.keys(META.errors||{});if(er.length)b.push(`<div class="bn w">Beim letzten Export fehlten: ${E(er.join(", "))} – dafür letzte gültige Daten.</div>`)}
+ const fr=Object.entries(FROM).filter(([,v])=>v);if(fr.length&&!metaFail)b.push(`<div class="bn w">Datei nicht ladbar – zeige letzte Daten von ${E(tm(fr[0][1]))}.</div>`);
+ const h=b.join("");if($("banner").innerHTML!==h)$("banner").innerHTML=h;
+ const st=META?`Stand ${E(META.stand)} MEZ · Update alle ${META.interval_min||5} Min.`:"Keine Daten";if($("stand").textContent!==st)$("stand").textContent=st}
+async function show(force){const k=(location.hash||"#dash").slice(1);const key=V[k]?k:"dash";
+ if(busy)return;busy=true;try{
+  if(key!==cur){nav(key);cur=key;lastHTML="";window.scrollTo(0,0)}
+  if(force||!META)await loadMeta();
+  let html;try{await Promise.all(NEED[key].map(load));html=V[key]()}
+  catch(e){html=card("Daten nicht verfügbar",`<div class="neg">${E(e.message||e)}</div><div class="mu">Es liegen auch keine zwischengespeicherten Daten vor.</div><button class="more" data-reload="1">Erneut versuchen</button>`)}
+  banners();if(html!==lastHTML){$("m").innerHTML=html;lastHTML=html}
+ }finally{busy=false}}
+document.addEventListener("click",e=>{const m=e.target.closest("[data-more]");if(m){LIM[m.dataset.more]=(LIM[m.dataset.more]||+m.dataset.step)+ +m.dataset.step;lastHTML="";const y=scrollY;show().then(()=>scrollTo(0,y));return}
+ if(e.target.closest("[data-reload]"))show(true)},{passive:true});
+addEventListener("hashchange",()=>show(false),{passive:true});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)show(true)},{passive:true});
+addEventListener("online",()=>show(true),{passive:true});
+setInterval(()=>{if(!document.hidden)show(true)},60000);
+show(true);
+if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script></body></html>
