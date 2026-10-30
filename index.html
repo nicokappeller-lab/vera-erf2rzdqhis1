@@ -1,0 +1,60 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VERA"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon.svg">
+<title>VERA AI – Paper</title>
+<style>
+:root{--bg:#0b0f14;--card:#141b24;--tx:#e6edf3;--mu:#8b98a5;--gr:#4ade80;--rd:#f87171;--yl:#fbbf24}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px -apple-system,system-ui,sans-serif;padding:env(safe-area-inset-top) 0 calc(70px + env(safe-area-inset-bottom))}
+header{padding:12px 16px;display:flex;justify-content:space-between;align-items:center}h1{font-size:20px;margin:0}
+.badge{background:#3b2f0b;color:var(--yl);border-radius:8px;padding:3px 8px;font-size:12px;font-weight:600}
+main{padding:0 12px}.card{background:var(--card);border-radius:14px;padding:14px;margin:10px 0}.card h2{font-size:15px;margin:0 0 8px;color:var(--mu);font-weight:600}
+.big{font-size:26px;font-weight:700}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mu{color:var(--mu);font-size:13px}
+.pos{color:var(--gr)}.neg{color:var(--rd)}.warn{color:var(--yl)}table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:5px 4px;border-bottom:1px solid #222c38;text-align:left}
+th{color:var(--mu);font-weight:500}.empty{color:var(--mu);font-style:italic;padding:8px 0}
+nav{position:fixed;bottom:0;left:0;right:0;background:#0f151d;display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));border-top:1px solid #222c38}
+nav a{color:var(--mu);text-decoration:none;font-size:11px;text-align:center;flex:1}nav a.on{color:var(--gr)}nav a span{display:block;font-size:20px}
+.bar{height:8px;background:#222c38;border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gr)}pre{white-space:pre-wrap;font-size:12px}
+</style></head><body>
+<header><h1>VERA AI</h1><span class="badge">PAPER · keine echten Orders</span></header>
+<main id="m"><div class="empty">Lade …</div></main>
+<nav id="nav"></nav>
+<script>
+const P=[["dash","📊","Dashboard"],["sig","⚡","Signale"],["jr","📒","Journal"],["ftmo","🛡️","FTMO"],["strat","🏆","Strategien"],["res","🔬","Research"]];
+async function J(p){const k=p.replace("/api/","").split("?")[0];const r=await fetch("data/"+k+".json?"+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error(r.status);return r.json()}
+fetch("data/meta.json?"+Date.now()).then(r=>r.json()).then(x=>{const b=document.createElement("div");b.className="mu";b.style.cssText="font-size:12px;padding:2px 12px";b.textContent="Stand: "+x.stand+" · Update alle 15 Min.";document.querySelector("header").after(b)}).catch(()=>{});
+const f=(x,d=2)=>x==null||x===""||isNaN(x)?"–":Number(x).toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d});
+const c=x=>x>0?"pos":x<0?"neg":"";const E=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+const tm=s=>s?new Date(s).toLocaleString("de-DE",{timeZone:"Europe/Berlin",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})+" MEZ":"–";
+const card=(h,b)=>`<div class="card"><h2>${h}</h2>${b}</div>`;const empty=t=>`<div class="empty">${t}</div>`;
+const tbl=(hd,rs)=>rs.length?`<table><tr>${hd.map(h=>`<th>${h}</th>`).join("")}</tr>${rs.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join("")}</tr>`).join("")}</table>`:empty("Keine Einträge.");
+const V={
+async dash(){const d=await J("/api/status"),s=d.status,a=s.account||{};if(s.error)return card("Status",`<div class="neg">${E(s.error)}</div>`);
+ const pnl=a.balance-a.initial;const st=Object.entries(s.strategies||{});const dt=Object.entries(s.data||{});
+ return card("Virtuelles Konto",`<div class="big">${f(a.equity)} $</div><div class="grid"><div><div class="mu">Balance</div>${f(a.balance)} $</div><div><div class="mu">Ergebnis</div><span class="${c(pnl)}">${f(pnl)} $</span></div><div><div class="mu">Offene Positionen</div>${a.open_positions??0}</div><div><div class="mu">Abgeschlossen</div>${a.closed_trades??0}</div></div>`)
+ +card("Dienst",`<div>${d.age_s!=null&&d.age_s<180?'<span class="pos">● läuft</span>':'<span class="neg">● kein Herzschlag</span>'} <span class="mu">Stand ${tm(s.updated)} (${d.age_s??"?"} s alt)</span></div><div class="mu">Journal: ${E(s.journal)}</div><div class="mu">Echte Orders: ${d.real_orders_enabled?'<b class="neg">AN</b>':"aus (fest)"}</div>${a.locked?`<div class="neg">FTMO-Sperre: ${E(JSON.stringify(a.locked))}</div>`:""}`)
+ +card("Strategien",tbl(["Strategie","Zustand"],st.map(([k,v])=>[E(k.replace("PAPER_","")),E(v.state)+(v.reason?`<div class="mu">${E(v.reason)}</div>`:"")])))
+ +card("Daten",tbl(["Symbol","Status"],dt.map(([k,v])=>[E(k),`<span class="${v.ok?"pos":"neg"}">${v.ok?"ok":"Pause"}</span><div class="mu">${E(v.reason)}</div>`])))},
+async sig(){const d=await J("/api/signals");
+ return card("Offene Paper-Positionen",tbl(["Strategie","Richtung","Einstieg","Stop","Lot"],d.open.map(p=>[E(p.strategy),p.d>0?"Long":"Short",f(p.entry_fill,3),f(p.stop,3),p.lots])))
+ +card("Signale & Trades",d.events.length?tbl(["Zeit","Art","Strategie","Info"],d.events.map(e=>{const p=e.payload;return[tm(e.ts),E(e.kind),E((p.strategy||"").replace("PAPER_","")),e.kind=="CLOSE"?`<span class="${c(p.pnl_usd)}">${f(p.pnl_usd)} $</span> ${E(p.exit_reason)}`:e.kind=="OPEN"?`${p.d>0?"Long":"Short"} ${f(p.entry_fill,3)}`:E(p.reason)]})):empty("Noch keine Signale seit Dienststart – Paper-Dienst wartet auf die nächste Session."))},
+async jr(){const d=await J("/api/journal?n=300");return card("Unveränderliches Journal (Hashkette)",tbl(["#","Zeit","Ereignis","Details"],d.events.map(e=>[e.seq,tm(e.ts),E(e.kind),`<span class="mu">${E(JSON.stringify(e.payload).slice(0,160))}</span>`])))},
+async ftmo(){const d=await J("/api/ftmo"),a=d.account||{};if(!a.equity)return card("FTMO",empty("Keine Kontodaten."));
+ const dl=a.equity-a.daily_floor,ml=a.equity-a.max_floor,ini=a.initial;const b=(v,m)=>`<div class="bar"><i style="width:${Math.max(0,Math.min(100,v/m*100))}%;background:${v/m<.3?"var(--rd)":v/m<.6?"var(--yl)":"var(--gr)"}"></i></div>`;
+ return card("Risikomanager (virtuell, "+E(d.profile)+")",`<div class="mu">Abstand Tagesverlust-Grenze (${f(a.daily_floor,0)} $)</div><div class="big ${dl<.015*ini?"warn":""}">${f(dl)} $</div>${b(dl,.05*ini)}<br><div class="mu">Abstand Maximalverlust-Grenze (${f(a.max_floor,0)} $)</div><div class="big">${f(ml)} $</div>${b(ml,.10*ini)}<br><div class="mu">Risiko je Trade Standard ${d.risk.default_pct} %, konservativ ${d.risk.conservative_pct} %, offenes Risiko max. ${d.risk.max_open_risk_pct} %</div>${a.locked?`<div class="neg">GESPERRT: ${E(JSON.stringify(a.locked))}</div>`:'<div class="pos">Keine Regelverletzung</div>'}`)
+ +card("Tages-P&L (Paper)",Object.keys(d.daily_pnl).length?tbl(["Tag (UTC)","P&L $"],Object.entries(d.daily_pnl).map(([k,v])=>[k,`<span class="${c(v)}">${f(v)}</span>`])):empty("Noch keine abgeschlossenen Paper-Trades."))
+ +card("Regelwerke (Quelle)",tbl(["Regelwerk","abgerufen"],d.rulesets.map(r=>[`<a style="color:var(--gr)" href="${E(r.url)}">${E(r.id)}</a>`,E(r.retrieved)])))},
+async strat(){const d=await J("/api/strategies");const R=r=>[E(r.strategy.replace("VERA_","").replace("|BASIS|","·").replace("|basis|TP2R","")),E(r.symbol),r.n,`<span class="${c(r.avg_r)}">${f(r.avg_r,3)}</span>`,f(r.pf),f(r.t_stat)];
+ return card("Im Paper-Trading",tbl(["Strategie","Symbol","Risiko %"],d.paper.map(p=>[E(p.id.replace("PAPER_","")),E(p.symbol),p.risk_pct])))
+ +card("Robuste ORB-Konfigurationen (Phase 1)",tbl(["Strategie","Symbol","OOS n","OOS ØR","PF","t"],d.robust_orb.map(r=>[E(r.strategy),E(r.symbol),Math.round(r.n_OOS),`<span class="${c(r.avg_r_OOS)}">${f(r.avg_r_OOS,3)}</span>`,f(r.pf_OOS),f(r.t_stat_OOS)])))
+ +card("Rangliste ORB OOS netto (n≥30) – "+E(d.orb_run),tbl(["Strategie","Symbol","n","ØR","PF","t"],d.orb.map(R)))
+ +card("Rangliste VERA-Familien Standard OOS netto (n≥30) – "+E(d.vera_run),tbl(["Familie·Einstieg","Symbol","n","ØR","PF","t"],d.vera.map(R))+'<div class="mu">Hinweis: viele Kombinationen getestet → Spitzenwerte teils Zufall. Keine Familie besteht Walk-Forward.</div>')},
+async res(){const d=await J("/api/research");
+ return card("Hypothesen (Research Intelligence)",d.hypotheses.length?tbl(["Titel","Quelle","Status"],d.hypotheses.map(h=>[`<a style="color:var(--gr)" href="${E(h.url)}">${E(h.title)}</a>`,E(h.source_kind),E(h.status)])):empty("Noch keine Hypothesen – Recherche-Agent noch nicht gelaufen."))
+ +card("Funde (Kandidaten)",tbl(["Titel","Stufe"],d.candidates.map(h=>[`<a style="color:var(--gr)" href="${E(h.url)}">${E((h.title||"").slice(0,70))}</a>`,E(h.stage)])))
+ +card("Offene Fragen an Nico",d.fragen_md?`<pre>${E(d.fragen_md)}</pre>`:empty("Noch keine Fragenliste."))}};
+function nav(){const cur=(location.hash||"#dash").slice(1);document.getElementById("nav").innerHTML=P.map(([k,i,t])=>`<a href="#${k}" class="${k==cur?"on":""}"><span>${i}</span>${t}</a>`).join("");return cur}
+async function show(){const k=nav();try{document.getElementById("m").innerHTML=await (V[k]||V.dash)()}catch(e){document.getElementById("m").innerHTML=card("Fehler",`<div class="neg">${E(e.message)}</div>`)}}
+addEventListener("hashchange",show);show();setInterval(()=>{if(!document.hidden)show()},30000);
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
+</script></body></html>
