@@ -22,7 +22,7 @@ nav a{color:var(--mu);text-decoration:none;font-size:11px;text-align:center;flex
 <script>
 const P=[["dash","📊","Dashboard"],["sig","⚡","Signale"],["jr","📒","Journal"],["ftmo","🛡️","FTMO"],["strat","🏆","Strategien"],["res","🔬","Research"]];
 async function J(p){const k=p.replace("/api/","").split("?")[0];const r=await fetch("data/"+k+".json?"+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error(r.status);return r.json()}
-fetch("data/meta.json?"+Date.now()).then(r=>r.json()).then(x=>{const b=document.createElement("div");b.className="mu";b.style.cssText="font-size:12px;padding:2px 12px";b.textContent="Stand: "+x.stand+" · Update alle 15 Min.";document.querySelector("header").after(b)}).catch(()=>{});
+fetch("data/meta.json?"+Date.now()).then(r=>r.json()).then(x=>{const b=document.createElement("div");b.className="mu";b.style.cssText="font-size:12px;padding:2px 12px";b.textContent="Stand: "+x.stand+" · Update alle 5 Min.";document.querySelector("header").after(b)}).catch(()=>{});
 const f=(x,d=2)=>x==null||x===""||isNaN(x)?"–":Number(x).toLocaleString("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d});
 const c=x=>x>0?"pos":x<0?"neg":"";const E=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 const tm=s=>s?new Date(s).toLocaleString("de-DE",{timeZone:"Europe/Berlin",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})+" MEZ":"–";
