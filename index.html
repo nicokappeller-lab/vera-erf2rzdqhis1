@@ -45,7 +45,7 @@ async ftmo(){const d=await J("/api/ftmo"),a=d.account||{};if(!a.equity)return ca
  +card("Tages-P&L (Paper)",Object.keys(d.daily_pnl).length?tbl(["Tag (UTC)","P&L $"],Object.entries(d.daily_pnl).map(([k,v])=>[k,`<span class="${c(v)}">${f(v)}</span>`])):empty("Noch keine abgeschlossenen Paper-Trades."))
  +card("Regelwerke (Quelle)",tbl(["Regelwerk","abgerufen"],d.rulesets.map(r=>[`<a style="color:var(--gr)" href="${E(r.url)}">${E(r.id)}</a>`,E(r.retrieved)])))},
 async strat(){const d=await J("/api/strategies");const R=r=>[E(r.strategy.replace("VERA_","").replace("|BASIS|","·").replace("|basis|TP2R","")),E(r.symbol),r.n,`<span class="${c(r.avg_r)}">${f(r.avg_r,3)}</span>`,f(r.pf),f(r.t_stat)];
- return card("Im Paper-Trading",tbl(["Strategie","Symbol","Risiko %"],d.paper.map(p=>[E(p.id.replace("PAPER_","")),E(p.symbol),p.risk_pct])))
+ return card("Im Paper-Trading",tbl(["Gruppe","Strategie","Symbol","Risiko %","Status","Herkunft / Basis"],d.paper.map(p=>[E(p.gruppe),E(p.id.replace("PAPER_","")),E(p.symbol),p.risk_pct,E(p.status),E(p.herkunft+" – "+p.basis)])))
  +card("Robuste ORB-Konfigurationen (Phase 1)",tbl(["Strategie","Symbol","OOS n","OOS ØR","PF","t"],d.robust_orb.map(r=>[E(r.strategy),E(r.symbol),Math.round(r.n_OOS),`<span class="${c(r.avg_r_OOS)}">${f(r.avg_r_OOS,3)}</span>`,f(r.pf_OOS),f(r.t_stat_OOS)])))
  +card("Rangliste ORB OOS netto (n≥30) – "+E(d.orb_run),tbl(["Strategie","Symbol","n","ØR","PF","t"],d.orb.map(R)))
  +card("Rangliste VERA-Familien Standard OOS netto (n≥30) – "+E(d.vera_run),tbl(["Familie·Einstieg","Symbol","n","ØR","PF","t"],d.vera.map(R))+'<div class="mu">Hinweis: viele Kombinationen getestet → Spitzenwerte teils Zufall. Keine Familie besteht Walk-Forward.</div>')},
