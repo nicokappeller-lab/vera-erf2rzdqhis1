@@ -103,7 +103,7 @@ const T=p=>{const r=num(p.r_now),tp=(p.tp||[]);return `<details class="tr"><summ
  <div class="lv"><div><span>Einstieg</span><b>${px(p.entry_fill,p.entry_fill)}</b></div><div><span>Stop (SL)</span><b>${px(p.stop,p.entry_fill)}</b></div><div><span>Ziel (TP)</span><b>${tp.length?tp.map(x=>px(x,p.entry_fill)).join(" / "):"–"}</b></div></div></summary>
  <div class="det">Strategie: ${E(nm(p.strategy))}<br>Aktueller Kurs: ${px(p.now_px,p.entry_fill)}<br>Ausstieg: ${E(p.exit_rule||"laut Strategie")}<br>Risiko: ${usd(p.risk_usd)} (${f(p.risk_pct,2)} %) · ${f(p.lots,2)} Lot<br>Signal: ${tm(p.entry_time)} zu ${px(p.signal_entry,p.entry_fill)}
  ${p.late?`<br><b class="warn">${E(p.label||"NACHGEÖFFNET")}</b> – Einstieg zum damals aktuellen Kurs, nicht zum Signalkurs.`:""}</div></details>`};
-const EV=a=>{const re=new Set((a||[]).filter(e=>e.kind==="NACHGEOEFFNET").map(e=>e.p&&e.p.key));return(a||[]).filter(e=>KIND[e.kind]&&!(e.kind==="VERPASST"&&e.p&&e.p.key&&re.has(e.p.key)))};
+const EV=a=>{const re=new Set((a||[]).filter(e=>e.kind==="NACHGEOEFFNET").map(e=>e.p&&e.p.key)),dm={};(a||[]).forEach(e=>{if(e.p&&e.p.key&&num(e.p.d)!==null)dm[e.p.key]=e.p.d});(a||[]).forEach(e=>{if(e.p&&e.p.key&&num(e.p.d)===null&&dm[e.p.key]!=null)e.p.d=dm[e.p.key]});return(a||[]).filter(e=>KIND[e.kind]&&!(e.kind==="VERPASST"&&e.p&&e.p.key&&re.has(e.p.key)))};
 const sn=p=>nm(p.strategy).replace(SYM(p.symbol),"").replace(/\s+/g," ").trim();
 const S=e=>{const p=e.p||{},k=KIND[e.kind]||[e.kind,""];
  const r=e.kind==="CLOSE"?`<b class="${cl(p.pnl_usd)}">${(num(p.pnl_usd)>0?"+":"")+usd(p.pnl_usd)}</b><div class="mu">${num(p.r_net)!==null?(p.r_net>0?"+":"")+f(p.r_net,2)+" R":""}</div>`
